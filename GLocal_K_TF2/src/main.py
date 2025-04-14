@@ -1,8 +1,8 @@
 from tensorflow import keras
 import numpy as np
-from src.data_loader import load_data_100k, load_data_1m, load_data_monti
-from src.model import create_model, train_model
-from src.evaluate import call_ndcg
+from data_loader import load_data_100k, load_data_1m, load_data_monti
+from model import create_model, train_model
+from evaluate import call_ndcg
 
 def main():
     data_path = ''  # Specify your data path here
@@ -10,7 +10,7 @@ def main():
 
     # Load the dataset
     if dataset == 'ML-100K':
-        path = data_path + '/MovieLens_100K/'
+        path = data_path + 'data/MovieLens_100K/'
         n_m, n_u, train_r, train_m, test_r, test_m = load_data_100k(path=path, delimiter='\t')
 
     elif dataset == 'ML-1M':
@@ -28,7 +28,8 @@ def main():
     n_hid = 500
     n_dim = 5
     gk_size = 3
-    model = create_model(n_m, n_u, n_hid, n_dim, gk_size)
+    dot_scale = 1 # Add the dot_scale parameter
+    model = create_model(n_m, n_u, n_hid, n_dim, gk_size, dot_scale) # Pass dot_scale to the function
 
     # Train the model
     train_model(model, train_r, train_m, epochs=30)
