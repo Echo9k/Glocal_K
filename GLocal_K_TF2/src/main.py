@@ -1,30 +1,37 @@
-# GLocal_K_TF2/src/main.py
-
-import tensorflow as tf
+from tensorflow import keras
+import numpy as np
 from src.data_loader import load_data_100k, load_data_1m, load_data_monti
-from src.model import build_model, train_model
+from src.model import create_model, train_model
 from src.evaluate import call_ndcg
 
 def main():
-    # Set up the data path and dataset selection
     data_path = ''  # Specify your data path here
     dataset = 'ML-100K'  # Choose among 'ML-100K', 'ML-1M', 'Douban'
 
     # Load the dataset
     if dataset == 'ML-100K':
-        n_m, n_u, train_r, train_m, test_r, test_m = load_data_100k(path=data_path + '/MovieLens_100K/')
+        path = data_path + '/MovieLens_100K/'
+        n_m, n_u, train_r, train_m, test_r, test_m = load_data_100k(path=path, delimiter='\t')
+
     elif dataset == 'ML-1M':
-        n_m, n_u, train_r, train_m, test_r, test_m = load_data_1m(path=data_path + '/MovieLens_1M/')
+        path = data_path + '/MovieLens_1M/'
+        n_m, n_u, train_r, train_m, test_r, test_m = load_data_1m(path=path, delimiter='::', frac=0.1, seed=1234)
+
     elif dataset == 'Douban':
-        n_m, n_u, train_r, train_m, test_r, test_m = load_data_monti(path=data_path + '/Douban_monti/')
+        path = data_path + '/Douban_monti/'
+        n_m, n_u, train_r, train_m, test_r, test_m = load_data_monti(path=path)
+
     else:
         raise ValueError("Invalid dataset selection")
 
     # Build and compile the model
-    model = build_model(n_m, n_u)
+    n_hid = 500
+    n_dim = 5
+    gk_size = 3
+    model = create_model(n_m, n_u, n_hid, n_dim, gk_size)
 
     # Train the model
-    train_model(model, train_r, train_m, test_r, test_m)
+    train_model(model, train_r, train_m, epochs=30)
 
     # Evaluate the model
     predictions = model.predict(test_r)

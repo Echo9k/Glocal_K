@@ -2,10 +2,11 @@ from tensorflow.keras.utils import get_file
 import numpy as np
 import pandas as pd
 import h5py
+from scipy.sparse import csc_matrix
 
 def load_data_100k(path='./', delimiter='\t'):
-    train = pd.read_csv(path + 'movielens_100k_u1.base', sep=delimiter, header=None).values.astype('int32')
-    test = pd.read_csv(path + 'movielens_100k_u1.test', sep=delimiter, header=None).values.astype('int32')
+    train = np.loadtxt(path + 'movielens_100k_u1.base', skiprows=0, delimiter=delimiter).astype('int32')
+    test = np.loadtxt(path + 'movielens_100k_u1.test', skiprows=0, delimiter=delimiter).astype('int32')
     total = np.concatenate((train, test), axis=0)
 
     n_u = np.unique(total[:, 0]).size  # num of users
@@ -35,8 +36,8 @@ def load_data_100k(path='./', delimiter='\t'):
 
 def load_data_1m(path='./', delimiter='::', frac=0.1, seed=1234):
     print('Reading data...')
-    data = pd.read_csv(path + 'movielens_1m_dataset.dat', sep=delimiter, header=None).values.astype('int32')
-    
+    data = np.loadtxt(path + 'movielens_1m_dataset.dat', skiprows=0, delimiter=delimiter).astype('int32')
+
     n_u = np.unique(data[:, 0]).size  # num of users
     n_m = np.unique(data[:, 1]).size  # num of movies
     n_r = data.shape[0]  # num of ratings
